@@ -7,4 +7,6 @@ public class Product
     public DateTime CreatedAt { get; set; }
     public DateTime ModifiedAt { get; set; }
     public string? Status { get; set; }
+
+    public ProductDetail? ProductDetail { get; set; }
 }

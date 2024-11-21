@@ -21,7 +21,7 @@ public class ProductController(IProductService productService, ILogger<ProductCo
             Status = dto.Status
         };
 
-        var createdProduct = productService.CreateProduct(product);
+        var createdProduct = await productService.CreateProductAsync(product);
 
         logger.LogInformation("{createdProduct.Id} - Id li yangi mahsulot yaratildi", createdProduct.Id);
 
@@ -41,17 +41,14 @@ public class ProductController(IProductService productService, ILogger<ProductCo
     {
         logger.LogInformation("{id} - Id li mahsulot qidirilmoqda", id);
     
-        var product = await productService.GetProductById(id);
-   
+        var product = await productService.GetProductByIdAsync(id);
+
         if (product == null)
         {
             logger.LogWarning("{id} - idli mahsulot topilmadi", id);
             return NotFound();
 
         }
-
-
-
         return Ok(new ProductReadDto
         {
             Id = product.Id,
@@ -68,7 +65,7 @@ public class ProductController(IProductService productService, ILogger<ProductCo
     {
         logger.LogInformation("Barcha mahsulotlar olinmoqda");
         
-        var products = productService.GetAllProducts();
+        var products = await productService.GetAllProductsAsync();
         
         logger.LogInformation("{products.Count} ta mahsulot topildi", products.Count());
         
@@ -95,7 +92,7 @@ public class ProductController(IProductService productService, ILogger<ProductCo
             Status = dto.Status
         };
 
-        var updatedProduct = productService.UpdateProduct(id, product);
+        var updatedProduct = await productService.UpdateProductAsync(id, product);
         if (updatedProduct == null)
         {
             logger.LogWarning("Yangilashni imkoni bo'lmadi. {id} - idli mahsulot topilmadi", id);
@@ -119,7 +116,7 @@ public class ProductController(IProductService productService, ILogger<ProductCo
     public async Task<ActionResult> DeleteProduct(Guid id)
     {
         logger.LogInformation("{id} - idli mahsulot o'chrilmoqda", id);
-        var deleted = productService.DeleteProduct(id);
+        var deleted = await productService.DeleteProductAsync(id);
         if (!deleted)
         {
             logger.LogError("O'chirish uchun {id} idli mahsulot topilmadi", id);
