@@ -1,0 +1,19 @@
+services:
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    environment:
+      POSTGRES_USER: akesh0805
+      POSTGRES_PASSWORD: 0805
+      POSTGRES_DB: crud
+    ports:
+      - "5433:5433"
