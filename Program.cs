@@ -1,3 +1,4 @@
+using Crud.Api;
 using Crud.Api.Service;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductDetailService, ProductDetailService>();
 
 builder.Services.AddControllers();
 

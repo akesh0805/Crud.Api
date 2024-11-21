@@ -5,7 +5,7 @@ namespace Crud.Api.Service;
 
 public class ProductService(AppDbContext dbContext, ILogger<ProductService> logger) : IProductService
 {
-    public Product CreateProduct(Product product)
+    public async Task<Product> CreateProductAsync(Product product)
     {
         product.Id = Guid.NewGuid();
         product.CreatedAt = DateTime.UtcNow;
@@ -13,13 +13,15 @@ public class ProductService(AppDbContext dbContext, ILogger<ProductService> logg
         logger.LogInformation("{product} mahsulotiga id va vaqtlar generatsiya qilinmqoda", product.Name);
 
         dbContext.Products!.Add(product);
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync();
 
         logger.LogInformation("{product.Name} nomli mahsulot databasega saqlandi ", product.Name);
         return product;
     }
 
-    public bool DeleteProduct(Guid id)
+
+
+    public async Task<bool> DeleteProductAsync(Guid id)
     {
         logger.LogInformation("{id} idli mahsulot database dan qidirilmoqda", id);
         var product = dbContext.Products!.Find(id);
@@ -31,21 +33,25 @@ public class ProductService(AppDbContext dbContext, ILogger<ProductService> logg
 
 
         dbContext.Products.Remove(product);
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync();
         logger.LogInformation("{id} idli mahsulot databasedan ochirib tashlandi", id);
         return true;
     }
 
-    public IEnumerable<Product> GetAllProducts()
+
+
+    public async Task<IEnumerable<Product>> GetAllProductsAsync()
     {
         logger.LogInformation("database barcha mahsulotlari");
-        return [.. dbContext.Products!];
+        return await dbContext.Products.Include(p => p.ProductDetail).ToListAsync();
     }
 
-    public Task<Product?> GetProductById(Guid id)
+
+
+    public async Task<Product> GetProductByIdAsync(Guid id)
     {
         logger.LogInformation("{id} idli mahsulot databasedan qidirilmoq", id);
-        return dbContext.Products!.FirstOrDefaultAsync(p => p.Id == id);
+        return await dbContext.Products.Include(p => p.ProductDetail).FirstOrDefaultAsync(p => p.Id == id);
     }
 
 
@@ -55,7 +61,7 @@ public class ProductService(AppDbContext dbContext, ILogger<ProductService> logg
         var borProduct = dbContext.Products?.Find(id);
         if (borProduct == null)
         {
-            logger.LogWarning("yangilash uchun databaseda {id}idli mahsulot topilmadi",id);
+            logger.LogWarning("yangilash uchun databaseda {id}idli mahsulot topilmadi", id);
             return null!;
         }
 
@@ -68,5 +74,10 @@ public class ProductService(AppDbContext dbContext, ILogger<ProductService> logg
         logger.LogInformation("{product} nomlimahsulot yangilandi va databasega saqlandi", borProduct.Name);
 
         return borProduct;
+    }
+
+    public Task<Product> UpdateProductAsync(Guid id, Product product)
+    {
+        throw new NotImplementedException();
     }
 }

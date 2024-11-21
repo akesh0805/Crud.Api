@@ -1,9 +1,11 @@
 using Crud.Api.Entities;
 using Microsoft.EntityFrameworkCore;
+namespace Crud.Api;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<Product>? Products { get; set; }
+    public DbSet<ProductDetail>? ProductDetails { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -17,6 +19,18 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("now");
             entity.Property(e => e.ModifiedAt).HasDefaultValueSql("now");
+        });
+
+
+        // ProductDetail konfiguratsiyasi
+        modelBuilder.Entity<ProductDetail>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.HasOne(e => e.Product)
+                .WithOne(p => p.ProductDetail)
+                .HasForeignKey<ProductDetail>(e => e.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
